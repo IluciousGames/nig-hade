@@ -1,0 +1,100 @@
+# Generate the HTML content for a Discord-style layout
+html_content = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Logs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2f3136;
+            color: #dcddde;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #36393f;
+            border-radius: 10px;
+        }
+        .message {
+            display: flex;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px solid #40444b;
+        }
+        .message:last-child {
+            border-bottom: none;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .message-content {
+            flex: 1;
+        }
+        .author {
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .date {
+            font-size: 12px;
+            color: #72767d;
+            margin-left: 5px;
+        }
+        .attachments img {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+        .content {
+            margin: 5px 0;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+"""
+
+# Add messages dynamically from dataframe
+for _, row in df.iterrows():
+    avatar = row['avatar'] if pd.notna(row['avatar']) else ''
+    author = row['authorName']
+    date = row['date']
+    content = row['content'] if pd.notna(row['content']) else ''
+    attachment = f"<div class='attachments'><img src='{row['attachments']}'></div>" if pd.notna(row['attachments']) else ''
+
+    html_content += f"""
+        <div class="message">
+            <img class="avatar" src="{avatar}" alt="avatar">
+            <div class="message-content">
+                <div>
+                    <span class="author">{author}</span>
+                    <span class="date">{date}</span>
+                </div>
+                <div class="content">{content}</div>
+                {attachment}
+            </div>
+        </div>
+    """
+
+# Close HTML
+html_content += """
+    </div>
+</body>
+</html>
+"""
+
+# Save the HTML file
+output_path = "/mnt/data/chatlogs_discord_style.html"
+with open(output_path, "w", encoding="utf-8") as f:
+    f.write(html_content)
+
+output_path
